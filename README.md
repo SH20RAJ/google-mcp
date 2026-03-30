@@ -14,12 +14,13 @@ A unified, high-performance **Model Context Protocol (MCP)** backend powered by 
 
 ## ✨ Features
 
-- **📧 Gmail**: List threads, search emails, get details, send replies, archive, and delete.
+- **📧 Gmail**: List threads, search emails, get details, send replies, archive, delete, and **Bulk Emailing**.
 - **📁 Drive**: List files, search, create/update/delete files and folders, and share.
 - **📅 Calendar**: Manage events, search by date range, create/update/delete.
 - **✅ Tasks**: Unified task management (List, Create, Update, Delete).
 - **📊 Sheets**: Read, write, append, and clear spreadsheet data.
 - **📝 Docs**: Create, read, and append to Google Documents.
+- **🛡️ MCP Compliant**: Uses standard JSON-RPC protocol and valid tool naming (underscores).
 
 ---
 
@@ -37,13 +38,16 @@ The easiest way to connect your LLM client to this backend is using `mcp-remote`
       "args": [
         "-y",
         "mcp-remote@latest",
-        "https://script.google.com/macros/s/AKfycbzbiXiGCEg1bjWkp58A6DSfU78I-n2bNohZW80tGFk3-hZjbsZh6Vj8En8SNMJd8Exa/exec?key=MCP_API_KEY"
+        "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec?key=YOUR_API_KEY"
       ],
       "disabledTools": []
     }
   }
 }
 ```
+
+> [!IMPORTANT]
+> **Tool Naming**: All tools use underscore separation (e.g., `gmail_listThreads`) to comply with strict MCP name validation regex (`^[a-zA-Z0-9_-]{1,64}$`).
 
 > [!TIP]
 > Replace the URL with your own deployment URL if you are hosting your own instance.
@@ -75,6 +79,7 @@ Since this is a standard MCP server reached via `mcp-remote`, it works with any 
 Once connected, you can ask your AI to perform tasks across Google Workspace. Here are some examples:
 
 - **Gmail**: "Read my latest email and summarize it."
+- **Bulk Email**: "Send a personalized welcome email to this list of 5 users: [list]."
 - **Calendar**: "Do I have any meetings tomorrow?" or "Schedule a 'Focus Time' from 2 PM to 4 PM today."
 - **Sheets**: "Read the first 10 rows of the 'Budget' spreadsheet."
 - **Docs**: "Create a new document called 'Project Notes' and add a summary of our discussion."
