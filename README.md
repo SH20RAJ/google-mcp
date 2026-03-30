@@ -1,4 +1,6 @@
-# 🚀 All-in-One Google MCP
+# 🚀 All-in-One Google MCP 🚀
+
+![All-in-One Google MCP](https://sh20raj.github.io/google-mcp/assets/og-main.png)
 
 [![Stars](https://img.shields.io/github/stars/SH20RAJ/google-mcp?style=for-the-badge)](https://github.com/SH20RAJ/google-mcp/stargazers)
 [![Forks](https://img.shields.io/github/forks/SH20RAJ/google-mcp?style=for-the-badge)](https://github.com/SH20RAJ/google-mcp/network/members)
