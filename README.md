@@ -1,5 +1,11 @@
 # 🚀 All-in-One Google MCP
 
+[![Stars](https://img.shields.io/github/stars/SH20RAJ/google-mcp?style=for-the-badge)](https://github.com/SH20RAJ/google-mcp/stargazers)
+[![Forks](https://img.shields.io/github/forks/SH20RAJ/google-mcp?style=for-the-badge)](https://github.com/SH20RAJ/google-mcp/network/members)
+[![Issues](https://img.shields.io/github/issues/SH20RAJ/google-mcp?style=for-the-badge)](https://github.com/SH20RAJ/google-mcp/issues)
+[![MIT License](https://img.shields.io/github/license/SH20RAJ/google-mcp?style=for-the-badge)](https://github.com/SH20RAJ/google-mcp/blob/main/LICENSE)
+![Visitors](https://api.visitorbadge.io/api/visitors?path=SH20RAJ%2Fgoogle-mcp&label=VISITORS&countColor=%23263238&style=for-the-badge)
+
 A unified, high-performance **Model Context Protocol (MCP)** backend powered by **Google Apps Script (GAS)**. This tool allows LLMs (like Antigravity, Gemini, ChatGPT, and Claude) to interact directly with your Google Workspace services with zero local overhead.
 
 ---
@@ -103,6 +109,18 @@ Google Apps Script has daily quotas that are generous for individual use but wor
 ## 🛡️ Security
 
 This project uses a simple API Key authentication mechanism passed via the `key` query parameter or `apiKey` JSON field. **Keep your Deployment URL secret.**
+
+## 🤝 Contributing
+
+Contributions are welcome! If you'd like to improve this project, please follow these steps:
+
+1.  **Fork** the repository.
+2.  Create a new **Feature Branch** (`git checkout -b feature/AmazingFeature`).
+3.  **Commit** your changes (`git commit -m 'Add some AmazingFeature'`).
+4.  **Push** to the branch (`git push origin feature/AmazingFeature`).
+5.  Open a **Pull Request**.
+
+Please ensure your code follows the existing style and includes appropriate documentation.
 
 ## 📄 License
 
