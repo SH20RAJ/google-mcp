@@ -29,7 +29,7 @@ The easiest way to connect your LLM client to this backend is using `mcp-remote`
       "args": [
         "-y",
         "mcp-remote@latest",
-        "https://script.google.com/macros/s/AKfycbzbiXiGCEg1bjWkp58A6DSfU37I-n2bNohZW80tGFk3-hZjbsZh6Vj8En8SNMJd8Exa/exec?key=fgftd-fufsgffduyffuyeg-wyfuuyfudfafutufu-fukyj"
+        "https://script.google.com/macros/s/AKfycbzbiXiGCEg1bjWkp58A6DSfU78I-n2bNohZW80tGFk3-hZjbsZh6Vj8En8SNMJd8Exa/exec?key=MCP_API_KEY"
       ],
       "disabledTools": []
     }
