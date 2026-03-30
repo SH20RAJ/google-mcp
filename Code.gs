@@ -181,6 +181,39 @@ const gmailTools = {
     },
     ['threadId'],
     gmailMarkUnread_
+  ),
+  sendBulkEmails: defineTool_(
+    'Send many personalized or common emails in one call (Note: uses current user quota).',
+    {
+      emails: {
+        type: 'array',
+        description: 'An array of email objects to send.',
+        items: {
+          type: 'object',
+          properties: {
+            to: { type: 'string', description: 'Recipient email address.' },
+            subject: { type: 'string', description: 'Optional subject override for this recipient.' },
+            body: { type: 'string', description: 'Optional plain text body override for this recipient.' },
+            htmlBody: { type: 'string', description: 'Optional HTML body override for this recipient.' }
+          },
+          required: ['to']
+        }
+      },
+      commonSubject: {
+        type: 'string',
+        description: 'Default subject for all emails if not specified per recipient.'
+      },
+      commonBody: {
+        type: 'string',
+        description: 'Default plain text body for all emails if not specified per recipient.'
+      },
+      commonHtmlBody: {
+        type: 'string',
+        description: 'Default HTML body for all emails if not specified per recipient.'
+      }
+    },
+    ['emails'],
+    gmailSendBulkEmails_
   )
 };
 
@@ -1329,6 +1362,41 @@ function gmailMarkUnread_(args) {
   return {
     markedUnread: true,
     threadId: args.threadId
+  };
+}
+
+function gmailSendBulkEmails_(args) {
+  var emails = args.emails;
+  var commonSubject = args.commonSubject || '';
+  var commonBody = args.commonBody || '';
+  var commonHtmlBody = args.commonHtmlBody || '';
+  var results = { sent: [], failed: [] };
+
+  for (var i = 0; i < emails.length; i++) {
+    var email = emails[i];
+    var to = email.to;
+    var subject = email.subject || commonSubject;
+    var body = email.body || commonBody;
+    var options = {};
+    
+    var htmlContent = email.htmlBody || commonHtmlBody;
+    if (htmlContent) {
+      options.htmlBody = htmlContent;
+    }
+
+    try {
+      GmailApp.sendEmail(to, subject, body, options);
+      results.sent.push(to);
+    } catch (e) {
+      results.failed.push({ to: to, error: e.message });
+    }
+  }
+
+  return {
+    success: results.failed.length === 0,
+    sentCount: results.sent.length,
+    failedCount: results.failed.length,
+    results: results
   };
 }
 
