@@ -1,0 +1,18 @@
+# Google Apps Script (Clasp)
+.clasp.json
+.claspignore
+
+# Local Environment
+node_modules/
+dist/
+build/
+.env
+
+# MCP Logs or Temporary Data
+*.log
+tmp/
+.temp/
+
+# OS Specific
+.DS_Store
+Thumbs.db
