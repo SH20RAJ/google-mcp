@@ -1,4 +1,4 @@
-# 🚀 All-in-One Google MCP (Google Apps Script)
+# 🚀 All-in-One Google MCP
 
 A unified, high-performance **Model Context Protocol (MCP)** backend powered by **Google Apps Script (GAS)**. This tool allows LLMs (like Antigravity, Gemini, ChatGPT, and Claude) to interact directly with your Google Workspace services with zero local overhead.
 
@@ -15,73 +15,94 @@ A unified, high-performance **Model Context Protocol (MCP)** backend powered by 
 
 ---
 
-## 🛠️ Installation & Setup
+## 🛠️ Connection & Setup
 
-### Option 1: Google Apps Script Web IDE (Fastest)
+### 🔗 Using `mcp-remote` (Recommended)
 
-1.  **Create a New Script**: Go to [script.google.com](https://script.google.com) and create a new project.
-2.  **Add Code**: Copy the content of `Code.gs` from this repository and paste it into the editor.
-3.  **Configure Scopes**: Click on the Gear icon (Project Settings) and check **"Show 'appsscript.json' manifest file in editor"**.
-4.  **Update Manifest**: Copy the content of `appsscript.json` from this repository into the script's manifest file.
-5.  **Enable Advanced Services**:
-    - Click the **+** next to "Services".
-    - Find **Tasks API** and click **Add**.
-6.  **Set API Key**:
-    - In Project Settings, scroll to **Script Properties**.
-    - Add a new property: `MCP_API_KEY` with a secure random string as the value.
-7.  **Deploy**:
-    - Click **Deploy > New Deployment**.
-    - Select **Web App**.
-    - **Execute as**: Me.
-    - **Who has access**: Anyone (The `MCP_API_KEY` protects your script).
-    - Copy the **Web App URL**.
+The easiest way to connect your LLM client to this backend is using `mcp-remote`. Add the following configuration to your MCP settings file (e.g., `mcp_config.json` for Antigravity or Desktop App):
 
-### Option 2: Local Development (VS Code + Clasp)
+```json
+{
+  "mcpServers": {
+    "google-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://script.google.com/macros/s/AKfycbzbiXiGCEg1bjWkp58A6DSfU37I-n2bNohZW80tGFk3-hZjbsZh6Vj8En8SNMJd8Exa/exec?key=fgftd-fufsgffduyffuyeg-wyfuuyfudfafutufu-fukyj"
+      ],
+      "disabledTools": []
+    }
+  }
+}
+```
 
-1.  **Initialize**:
-    ```bash
-    npm install -g @google/clasp
-    clasp login
-    clasp clone <YOUR_SCRIPT_ID>
-    ```
-2.  **Push Changes**:
-    ```bash
-    clasp push
-    ```
-3.  **Deploy**: Use the Web IDE or `clasp deploy` to manage your deployments.
+> [!TIP]
+> Replace the URL with your own deployment URL if you are hosting your own instance.
 
 ---
 
-## ⚙️ Configuration
+## 💻 Platform Setup
 
-### Integration with LLM Clients
+### 🌌 Antigravity / Gemini Desktop
+1. Open your `mcp_config.json`.
+2. Add the `google-mcp` configuration block shown above.
+3. Restart the application or refresh the MCP server list.
 
-To use this with an MCP client (like Antigravity or a custom proxy), configure it to talk to your Web App URL.
+### 💻 VS Code (MCP Client)
+If you are using an MCP-compatible extension in VS Code:
+1. Locate the extension's configuration for MCP servers.
+2. Add the `npx mcp-remote` command and your Web App URL.
 
-**Base URL**: `https://script.google.com/macros/s/.../exec`
+### 🌐 Other Clients & Platforms
+Since this is a standard MCP server reached via `mcp-remote`, it works with any client that supports the Model Context Protocol, including:
+- **Claude Desktop**
+- **Custom MCP Proxies**
+- **Self-hosted LLM interfaces**
 
-#### Query Parameters:
-- `?tools=1`: Discovery (List all available tools).
-- `?schema=1`: Fetch OpenAI-compatible tool definitions.
+---
 
-#### POST Request:
-The server expects a standard JSON-RPC payload:
-```json
-{
-  "method": "tools/call",
-  "params": {
-    "name": "gmail_listThreads",
-    "arguments": { "limit": 5 }
-  },
-  "apiKey": "YOUR_MCP_API_KEY"
-}
-```
+## 📝 Usage & Example Prompts
+
+Once connected, you can ask your AI to perform tasks across Google Workspace. Here are some examples:
+
+- **Gmail**: "Read my latest email and summarize it."
+- **Calendar**: "Do I have any meetings tomorrow?" or "Schedule a 'Focus Time' from 2 PM to 4 PM today."
+- **Sheets**: "Read the first 10 rows of the 'Budget' spreadsheet."
+- **Docs**: "Create a new document called 'Project Notes' and add a summary of our discussion."
+- **Tasks**: "List my pending tasks for today."
+
+---
+
+## 📊 Quotas & Limits
+
+Google Apps Script has daily quotas that are generous for individual use but worth noting:
+
+| Service | Consumer (@gmail.com) | Workspace |
+| :--- | :--- | :--- |
+| **URL Fetch** | 20,000 / day | 100,000 / day |
+| **Email Send** | 100 recipients / day | 1,500 recipients / day |
+| **Triggers Runtime** | 90 min / day | 6 hours / day |
+| **Simultaneous Executions** | 30 | 30 |
+
+> [!NOTE]
+> Each script execution has a hard limit of **6 minutes**. Large batch operations should be broken down into smaller chunks.
+
+---
+
+## ⚙️ Backend Installation (Self-Hosting)
+
+1.  **Create a New Script**: Go to [script.google.com](https://script.google.com) and create a new project.
+2.  **Add Code**: Copy the content of `Code.gs` from this repository and paste it into the editor.
+3.  **Update Manifest**: Switch to the `appsscript.json` tab (enable it in Settings if hidden) and paste the manifest content.
+4.  **Set API Key**: In **Project Settings**, add a Script Property `MCP_API_KEY` with your secret key.
+5.  **Deploy**: Click **Deploy > New Deployment > Web App**. Set Access to "Anyone".
 
 ---
 
 ## 🛡️ Security
 
-This script uses a simple API Key authentication mechanism. **Never share your Web App URL or API Key publicly.** If you believe your key is compromised, update the `MCP_API_KEY` in Script Properties and re-deploy if necessary.
+This project uses a simple API Key authentication mechanism passed via the `key` query parameter or `apiKey` JSON field. **Keep your Deployment URL secret.**
 
 ## 📄 License
 
