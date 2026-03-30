@@ -797,10 +797,20 @@ function doGet(e) {
 function doPost(e) {
   try {
     var payload = parseJsonBody_(e);
-    validateApiKey_(payload.apiKey);
+    var apiKey = payload.apiKey || (e.parameter && e.parameter.key) || (e.postData.type === 'application/json' && payload.apiKey);
+    
+    // In GAS, headers are not always available in doPost(e) directly unless using a specific wrapper
+    // but we can try to extract the key from the payload or parameters.
+    validateApiKey_(apiKey);
 
+    // MCP JSON-RPC protocol detection
+    if (payload.method) {
+      return handleMcpRequest_(payload);
+    }
+
+    // Legacy direct execution (if needed)
     if (!payload.tool) {
-      throw createError_('Missing required field: tool', 'INVALID_REQUEST');
+      throw createError_('Missing required field: tool (or method for MCP)', 'INVALID_REQUEST');
     }
 
     var args = hasOwn_(payload, 'arguments') ? payload.arguments : {};
@@ -811,8 +821,100 @@ function doPost(e) {
       data: result
     });
   } catch (err) {
-    return errorResponse_(err, 'POST_ERROR');
+    return mcpErrorResponse_(err, payload ? payload.id : null);
   }
+}
+
+/**
+ * Handles standard MCP JSON-RPC requests.
+ */
+function handleMcpRequest_(payload) {
+  var method = payload.method;
+  var params = payload.params || {};
+  var id = payload.id;
+  var result;
+
+  switch (method) {
+    case 'initialize':
+      result = {
+        protocolVersion: '2024-11-05',
+        capabilities: {
+          tools: {
+            listChanged: false
+          }
+        },
+        serverInfo: {
+          name: 'google-mcp-backend',
+          version: APP_VERSION
+        }
+      };
+      break;
+
+    case 'tools/list':
+      result = {
+        tools: getOpenAiToolSchemas_().map(function(tool) {
+          return {
+            name: tool.function.name,
+            description: tool.function.description,
+            inputSchema: tool.function.parameters
+          };
+        })
+      };
+      break;
+
+    case 'tools/call':
+      if (!params.name) {
+        throw createError_('Missing tool name in tools/call.', 'INVALID_PARAMS');
+      }
+      var toolName = params.name;
+      var args = params.arguments || {};
+      var toolResult = executeTool_(toolName, args);
+      
+      result = {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify(toolResult, null, 2)
+          }
+        ],
+        isError: false
+      };
+      break;
+
+    case 'notifications/initialized':
+      // Notification doesn't expect a response, but we return a success for the proxy
+      return jsonResponse_({ jsonrpc: '2.0', result: null });
+
+    case 'resources/list':
+    case 'prompts/list':
+      result = { items: [] }; // Not implemented yet
+      break;
+
+    default:
+      throw createError_('Unsupported MCP method: ' + method, 'METHOD_NOT_FOUND');
+  }
+
+  return jsonResponse_({
+    jsonrpc: '2.0',
+    id: id,
+    result: result
+  });
+}
+
+function mcpErrorResponse_(err, id) {
+  var code = -32603; // Internal error
+  if (err.code === 'UNAUTHORIZED') code = -32001;
+  if (err.code === 'METHOD_NOT_FOUND') code = -32601;
+  if (err.code === 'INVALID_PARAMS') code = -32602;
+
+  return jsonResponse_({
+    jsonrpc: '2.0',
+    id: id,
+    error: {
+      code: code,
+      message: err.message || 'Common MCP error'
+    }
+  });
 }
 
 // ---------------------------------------------------------------------------
