@@ -959,7 +959,7 @@ function getOpenAiToolSchemas_() {
       var toolDef = registry[service][action];
       tools.push(
         createToolSchema_(
-          service + '.' + action,
+          service + '_' + action,
           toolDef.description,
           toolDef.properties,
           toolDef.required
@@ -983,7 +983,7 @@ function getToolDiscovery_() {
       var action = actions[j];
       var toolDef = registry[service][action];
       tools.push({
-        name: service + '.' + action,
+        name: service + '_' + action,
         service: service,
         action: action,
         description: toolDef.description
@@ -1008,9 +1008,9 @@ function resolveTool_(toolName) {
     throw createError_('Tool name must be a non-empty string.', 'INVALID_TOOL');
   }
 
-  var parts = toolName.split('.');
+  var parts = toolName.indexOf('_') !== -1 ? toolName.split('_') : toolName.split('.');
   if (parts.length !== 2) {
-    throw createError_('Tool name must use the format service.action.', 'INVALID_TOOL');
+    throw createError_('Tool name must use the format service_action or service.action.', 'INVALID_TOOL');
   }
 
   var service = parts[0];
